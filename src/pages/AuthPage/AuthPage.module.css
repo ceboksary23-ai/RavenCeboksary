@@ -1,0 +1,90 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+.page {
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    background-color: var(--main-body);
+    flex-direction: column;
+    gap: 18vh;
+}
+
+.authWindow {
+    width: 32vw;
+    background-color: var(--secondary-body);
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start; 
+    padding: 20px;
+    min-height: 250px;
+    height: 45vh;
+    overflow-y: hidden;
+    transition: height 0.1s ease;
+    scrollbar-gutter: stable;
+}
+
+.authWindow:hover,
+.authWindow:focus-within {
+    overflow-y: auto; 
+}
+
+.authWindow.auth-register {
+    height: 62vh;
+}
+
+.messenglogo {
+    width: 3.5vw;
+    height: 7vh;
+}
+
+.msglogoandname {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    color: var(--text-heading);
+    font-size: 1.5vw;
+}
+
+.heading {
+    color: var(--text-hint);
+    font-size: 1vw;
+}
+
+.authorreg {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: var(--text-heading);
+    font-size: 1vw;
+}
+
+.authorreg span {
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin: 0 10px;
+}
+
+.authorreg span:hover {
+    color: var(--button-color);
+}
+
+.authorreg span.active {
+    color: var(--button-color);
+    border-bottom: 2px solid var(--button-color);
+    font-weight: 600;
+}
+
+.authorregbutton {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 5vh;
+}

@@ -1,0 +1,52 @@
+.input-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1vh;
+    justify-content: start;
+    align-items: start;
+}
+
+.input-header {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-hint);
+    font-size: 1vw;
+    margin-top: 1vh;
+}
+
+.inputField {
+    display: flex;
+    width: 100%;
+}
+
+.input-field {
+    width: 100%;
+    padding: 1.2vh 1vw;
+    border-radius: 10px;
+    font-size: 0.8vw;
+    outline: none;
+    background-color: var(--input-field) !important;
+    color: var(--text-heading);
+    border: 0px;
+}
+
+/* Отключаем стандартные стили автозаполнения */
+.input-field:-webkit-autofill,
+.input-field:-webkit-autofill:hover, 
+.input-field:-webkit-autofill:focus {
+    -webkit-text-fill-color: #333; /* Цвет текста */
+    -webkit-box-shadow: 0 0 0px 1000px var(--input-autofill-bg, #f8f9fa) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Для темной темы */
+.input-field.dark:-webkit-autofill {
+    -webkit-text-fill-color: #fff;
+    -webkit-box-shadow: 0 0 0px 1000px #2d3748 inset !important;
+}
+
+.input-field::placeholder {
+    color: var(--text-hint);
+}

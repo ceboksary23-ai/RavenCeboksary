@@ -1,0 +1,48 @@
+:root {
+  --main-body: #000000;
+  --secondary-body: #0a0a0a;
+  --settings-body: #121212;
+  --text-heading: #ffffff;
+  --text-hint: #888e99;
+  --text-in-button: #000000;
+  --button-color: #a0b8ff;
+  --input-field: #121212;
+  --newchat-button: #191b22;
+  --scrollbar-track: rgb(12, 12, 12);
+  --scrollbar-thumb: rgba(0, 0, 0, 0.753);
+  --scrollbar-border: rgba(27, 27, 27, 0.692);
+  --chat-header: #050505;
+  --component-border: #1c1c1c;
+}
+
+[data-theme="light"] {
+  --main-body: #ffffff;
+  --secondary-body: #f5f5f5;
+  --settings-body: #ffffff;
+  --text-heading: #000000;
+  --text-hint: #635c50;
+  --text-in-button: #ffffff;
+  --button-color: #4e7afc;
+  --input-field: #f0f0f0;
+  --newchat-button: #cecedb;
+  --scrollbar-track: rgb(221, 221, 221);
+  --scrollbar-thumb: rgba(165, 165, 165, 0.753);
+  --scrollbar-border: rgba(216, 216, 216, 0.692);
+  --chat-header: #ffffff;
+  --component-border: #e0e0e0;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+input,
+button,
+textarea,
+.authWindow,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}

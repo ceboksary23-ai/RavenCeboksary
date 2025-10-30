@@ -1,0 +1,11 @@
+.btn {
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 40px;
+}
+
+.btn-medium { font-size: 1vw; width: 100%; padding-top: 1%; padding-bottom: 1%;}
+
+.btn-blue { background-color: var(--button-color); color: var(--text-in-button);}
+.btn-gray { background-color: var(--settings-body); color: var(--text-heading);}
