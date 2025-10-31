@@ -11,6 +11,19 @@ const AuthFrame = () => {
   const changeAuthPassword = (event) => {
     setAuthPassword(event.target.value);
   };
+
+  const EnterAccount = async () => {
+    const { authService } = await import("../../../services/api/AuthService");
+    try {
+      const enterUser = await authService.Authorization({
+        email: authEmail,
+        password: authPassword,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <InputField
@@ -28,7 +41,7 @@ const AuthFrame = () => {
         onChange={changeAuthPassword}
       ></InputField>
       <div className="authorregbutton">
-        <RegButton color="blue" size="medium">
+        <RegButton color="blue" size="medium" onClick={EnterAccount}>
           Войти
         </RegButton>
       </div>

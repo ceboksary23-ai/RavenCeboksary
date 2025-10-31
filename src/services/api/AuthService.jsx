@@ -19,6 +19,32 @@ class AuthService {
             throw error;
         }
     }
+
+    async Authorization(userData) {
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.AUTHENTICATION.AUTHORIZATION}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(userData)
+            });
+            
+            const result = await response.json();
+
+            if (!response.ok) throw new Error(`${response.status}`);
+
+            localStorage.setItem('token', result.token);
+            localStorage.setItem('userid', result.userId);
+            localStorage.setItem('usersettings', JSON.stringify(result.settings));
+
+            return result;
+        }
+        catch(error) {
+            throw error;
+        } // проблема с данными в user
+    }
 }
 
 export const authService = new AuthService();
