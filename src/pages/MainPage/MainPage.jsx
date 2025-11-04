@@ -1,16 +1,86 @@
 import styles from "./MainPage.module.css";
 import BurgerMenuBtn from "../../components/common/Buttons/BurgerMenu/BurgerMenu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SearchField from "../../components/common/SearchField/SearchField";
+import ChatUi from "../../components/ui/Chat/ChatUi";
+import CreateNewChatModal from "../../components/layout/CreateNewChatModal/CreateNewChatModal";
 
 const MainPage = () => {
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [selectedChat, setSelectedChat] = useState(0);
+  const [chats, setChats] = useState([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [addNewChat, setAddNewChat] = useState(false);
 
-    const handleOpenSettingsWindow = () => {
-        setIsSettingsOpen(true);
-    };
+  const handleOpenSettingsWindow = () => {
+    setIsSettingsOpen(true);
+  };
+
+  const handleChatClock = (chatId) => {
+    setSelectedChat(chatId);
+  };
+
+  const handleAddNewChat = (prev) => {
+    setAddNewChat((prev) => !prev);
+  };
+
+  const loadChats = async (append = false) => {
+    const { chatsService } = await import("../../services/api/ChatsService");
+    try {
+      setLoading(true);
+      const userData = { page, pageSize: 10 };
+      const newChats = await chatsService.GetUserChats(userData);
+
+      if (append) {
+        setChats((prev) => [...prev, ...newChats]);
+      } else {
+        setChats(newChats);
+      }
+
+      setHasMore(newChats.length === 10);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadChats();
+  }, []);
+
+  const loadMore = () => {
+    setPage((prev) => prev + 1);
+    loadChats(true);
+  };
+
+  // const chats = [
+  //   {
+  //     id: 0,
+  //     img: logo,
+  //     name: "Kacher Twink",
+  //     time: "19:49",
+  //     msgText: "Окей, вчера полная помойка",
+  //   },
+  //   {
+  //     id: 1,
+  //     img: logo,
+  //     name: "James Wilson",
+  //     time: "19:03",
+  //     msgText: "Тб мне нужно файл E..",
+  //   },
+  //   {
+  //     id: 2,
+  //     img: logo,
+  //     name: "Joseph Stalin",
+  //     time: "18:42",
+  //     msgText: "Мой танк уже в тёплой пол окно...",
+  //   },
+  // ];
   return (
     <div className={styles["mainPage-container"]}>
+      {addNewChat && <CreateNewChatModal onClick={handleAddNewChat} />}
       <div className={styles["chatsList-container"]}>
         <div className={styles["logo-menu"]}>
           <p>
@@ -24,11 +94,35 @@ const MainPage = () => {
           </div>
         </div>
         <div className={styles["searchField-container"]}>
-            <SearchField/>
+          <SearchField />
         </div>
-        <div></div>
+        <div className={styles["chatsUi-container"]}>
+          <div className={styles["chats-container"]}>
+            {loading && <div className={styles.loader}></div>}
+            {chats.length === 0 && !loading ? (
+              <div className={styles["no-chats-placeholder"]}>
+                <p>У вас нет чатов. Создайте новый!</p>
+              </div>
+            ) : (
+              chats.map((chat) => (
+                <ChatUi
+                  key={chat.id}
+                  img={chat.img}
+                  name={chat.name}
+                  time={chat.time}
+                  msgText={chat.msgText}
+                  isSelected={selectedChat === chat.id}
+                  onClick={() => handleChatClock(chat.id)}
+                />
+              ))
+            )}
+          </div>
+          <div className={styles["add-newchat"]} onClick={handleAddNewChat}>
+            <button className={styles["add-newchat-btn"]}>+</button>{" "}
+          </div>
+        </div>
       </div>
-      <div></div>
+      <div></div> {/* Здесь будет второй блок */}
     </div>
   );
 };

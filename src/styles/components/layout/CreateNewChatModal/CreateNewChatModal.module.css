@@ -1,0 +1,22 @@
+.add-newchat-window-container {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    z-index: 999; 
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(var(--main-body), 1); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px); 
+  }
+  
+  .add-newchat-window {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px; 
+    text-align: center;
+  }

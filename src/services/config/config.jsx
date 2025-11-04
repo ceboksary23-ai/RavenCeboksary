@@ -3,5 +3,8 @@ export const API_CONFIG = {
     AUTHENTICATION: {
         REGISTRATION: '/api/auth/register',
         AUTHORIZATION: '/api/auth/login'
+    },
+    CHATS: {
+        GETUSERCHATS: '/api/chats',
     }
 };

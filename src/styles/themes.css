@@ -13,6 +13,7 @@
   --scrollbar-border: rgba(27, 27, 27, 0.692);
   --chat-header: #050505;
   --component-border: #1c1c1c;
+  --add-newchat-button: #444d68;
 }
 
 [data-theme="light"] {
@@ -30,6 +31,7 @@
   --scrollbar-border: rgba(216, 216, 216, 0.692);
   --chat-header: #ffffff;
   --component-border: #e0e0e0;
+  --add-newchat-button: #444d68;
 }
 
 * {

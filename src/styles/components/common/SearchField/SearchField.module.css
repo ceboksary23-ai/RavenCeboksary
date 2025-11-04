@@ -11,6 +11,7 @@
     background-color: var(--input-field);
     border-radius: 10px;
     padding: 1vh 0.5vw;
+    height: 40px;
     /* 10px 15px */
 }
 
@@ -43,4 +44,16 @@
     cursor: pointer;
     padding: 5px;
     font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .search-input {
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 1024px ) and (max-height: 912px) {
+    .search-input {
+        font-size: 14px;
+    }
 }
