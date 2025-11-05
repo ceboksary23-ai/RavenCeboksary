@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import SearchField from "../../components/common/SearchField/SearchField";
 import ChatUi from "../../components/ui/Chat/ChatUi";
 import CreateNewChatModal from "../../components/layout/CreateNewChatModal/CreateNewChatModal";
+import ThemeToggle from "../../components/common/ThemeToggle/ThemeToggle";
+import AboutChat from "./AboutChat";
+import logo from "../../logo.svg";
 
 const MainPage = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -84,6 +87,7 @@ const MainPage = () => {
       <div className={styles["chatsList-container"]}>
         <div className={styles["logo-menu"]}>
           <p>
+            <ThemeToggle />
             <b>Raven Chat</b>
           </p>
           <div className={styles["logo-menu-burger"]}>
@@ -122,7 +126,11 @@ const MainPage = () => {
           </div>
         </div>
       </div>
-      <div></div> {/* Здесь будет второй блок */}
+      <div className={styles["chat-container"]}>
+        <div className={styles["aboutchat-container"]}>
+          <AboutChat avatar={logo} name="Kacher Twink" isOnline={true} />
+        </div>
+      </div>
     </div>
   );
 };
