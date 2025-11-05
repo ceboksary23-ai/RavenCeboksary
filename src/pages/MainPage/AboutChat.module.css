@@ -2,9 +2,23 @@
     width: 100%;
     height: 100%;
     background-color: var(--secondary-body);
+    display: grid; 
+    grid-template-columns: 4fr 1fr; 
+    grid-template-rows: 1fr; 
+    gap: 0px 0px; 
+    grid-template-areas: 
+    ". ."; 
+}
+.aboutchat-user-container {
     display: flex;
 }
 
+.aboutchat-sidebar-btn {
+font-size: 48px;
+width: 100%;
+display: flex;
+justify-content: right;
+}
 .aboutchat-avatar {
     width: 100px;
     height: 100%;
