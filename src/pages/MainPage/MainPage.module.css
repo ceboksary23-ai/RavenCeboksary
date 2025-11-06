@@ -112,6 +112,16 @@
   height: 80px;
 }
 
+.chatsAddButtons {
+  z-index: 10;
+  width: 100%;
+  height: 45px;
+  font-size: 18px;
+  background-color: var(--settings-body);
+  color: var(--text-heading);
+  margin-bottom: 10px;
+}
+
 .loader {
   width: 50px;
   aspect-ratio: 1;
