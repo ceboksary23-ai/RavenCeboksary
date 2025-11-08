@@ -6,12 +6,18 @@ const CreateNewChatModal = ({ onClick }) => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [name, setName] = useState("");
+  const [pageNum, setPageNum] = useState(1);
+  const [infoIsOpen, setInfoIsOpen] = useState(false);
 
   const handleChangeName = (e) => {
     setName(e.target.value);
   };
 
-  const GetUsers = async (pageNum = 1) => {
+  const handleOpenInfo = (prev) => {
+    setInfoIsOpen((prev) => !prev);
+  };
+
+  const GetUsers = async () => {
     const { usersService } = await import("../../../services/api/UsersService");
 
     try {
@@ -21,7 +27,6 @@ const CreateNewChatModal = ({ onClick }) => {
         searchTerm: name,
       });
       setUsers(UsersList.users || []);
-      console.log(users);
     } catch (error) {}
   };
   return (
@@ -33,21 +38,36 @@ const CreateNewChatModal = ({ onClick }) => {
         exit={{ y: "100%", opacity: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h3>Создать новый чат</h3>
-        <input
-          className={styles["newchat-input-name"]}
-          type="text"
-          placeholder="Имя чата"
-        />
-        <input
-          className={styles["newchat-input-name"]}
-          type="text"
-          placeholder="Имя пользователя"
-          onChange={handleChangeName}
-        />
-        {users.map((user) => (
-          <p>{user.firstName}</p>
-        ))}
+        <div className={styles["newchat-main-content"]}>
+          <h3>Создать новый чат</h3>
+          <input
+            className={styles["newchat-input-name"]}
+            type="text"
+            placeholder="Имя чата"
+          />
+          <p className={styles["newchat-chooseUsers-title"]}>
+            Выберите пользователей
+          </p>
+          <input
+            className={styles["newchat-input-name"]}
+            type="text"
+            placeholder="Имя пользователя"
+            onChange={handleChangeName}
+          />
+          <div
+            className={styles["newchat-allusers"]}
+            onClick={handleOpenInfo}
+          ></div>
+          {infoIsOpen && (
+            <div className={styles["newchat-allusers-info"]}>
+              {users.map((user) => (
+                <div key={user.id}>
+                  <p>{user.firstName}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <div className={styles["newchat-buttons"]}>
           <button onClick={GetUsers}>Добавить в чат</button>
           <button onClick={onClick}>Закрыть</button>
