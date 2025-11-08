@@ -33,14 +33,14 @@ const MainPage = () => {
     setIsSettingsOpen(false);
   };
 
-  const handleChatClock = (chat) => {
-    setSelectedChat(chat);
+  const handleChatClock = async (chat) => {
+    // setSelectedChat(chat);
 
-    // try {
-    //   const { authService } = await import("../../services/api/AuthService");
-    //   authService.Logout();
-    // }
-    // catch{}
+    try {
+      const { authService } = await import("../../services/api/AuthService");
+      authService.Logout();
+    }
+    catch{}
   };
 
   const handleAddNewChat = (prev) => {
@@ -96,9 +96,9 @@ const MainPage = () => {
     }
   }, [filteredChats, search]);
 
-  // useEffect(() => {
-  //   loadChats();
-  // }, []);
+  useEffect(() => {
+    loadChats();
+  }, []);
 
   const loadMore = () => {
     setPage((prev) => prev + 1);

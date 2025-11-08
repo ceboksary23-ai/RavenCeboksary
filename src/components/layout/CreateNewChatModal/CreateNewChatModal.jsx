@@ -7,9 +7,14 @@ const CreateNewChatModal = ({ onClick }) => {
   const [page, setPage] = useState(1);
   const [name, setName] = useState("");
   const [pageNum, setPageNum] = useState(1);
+  const [infoIsOpen, setInfoIsOpen] = useState(false);
 
   const handleChangeName = (e) => {
     setName(e.target.value);
+  };
+
+  const handleOpenInfo = (prev) => {
+    setInfoIsOpen((prev) => !prev);
   };
 
   const GetUsers = async () => {
@@ -49,11 +54,19 @@ const CreateNewChatModal = ({ onClick }) => {
             placeholder="Имя пользователя"
             onChange={handleChangeName}
           />
-          {users.map((user) => (
-            <div key={user.id}>
-              <p>{user.firstName}</p>
+          <div
+            className={styles["newchat-allusers"]}
+            onClick={handleOpenInfo}
+          ></div>
+          {infoIsOpen && (
+            <div className={styles["newchat-allusers-info"]}>
+              {users.map((user) => (
+                <div key={user.id}>
+                  <p>{user.firstName}</p>
+                </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
         <div className={styles["newchat-buttons"]}>
           <button onClick={GetUsers}>Добавить в чат</button>

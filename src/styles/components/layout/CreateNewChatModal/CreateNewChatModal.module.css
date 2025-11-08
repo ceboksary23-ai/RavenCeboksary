@@ -18,7 +18,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 400px;
-  height: 400px;
+  height: 450px;
   text-align: center;
   color: var(--text-heading);
   border-radius: 25px;
@@ -55,10 +55,37 @@
 }
 
 .newchat-buttons button {
-  background-color: var(--button-color2);
+  background-color: var(--button-color);
   border-radius: 25px;
 }
 
 .newchat-main-content input {
   height: 45px;
+}
+
+.newchat-allusers {
+  width: 100%;
+  height: 45px;
+  margin-top: 10px;
+  background-color: var(--settings-body);
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.newchat-allusers-info div {
+  color: var(--text-heading);
+}
+
+.newchat-allusers-info {
+  border-top: 2px solid var(--secondary-body);
+  color: var(--text-heading);
+  position: fixed;
+  min-height: 0px;
+  height: auto;
+  text-align: left;
+  padding-left: 10px;
+  overflow-y: auto;
+  width: 360px;
+  background-color: var(--dropdown-list);
 }

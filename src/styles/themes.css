@@ -15,13 +15,15 @@
   --chat-header: #050505;
   --component-border: #1c1c1c;
   --add-newchat-button: #444d68;
+  --dropdown-list: #1e1e1e;
+
 }
 
 [data-theme="light"] {
   --main-body: #ffffff;
   --secondary-body: #f5f5f5;
   --settings-body: #ffffff;
-  --text-heading: #000000;
+    --text-heading: #000000;
   --text-hint: #635c50;
   --text-in-button: #ffffff;
   --button-color: #4e7afc;
@@ -34,6 +36,7 @@
   --chat-header: #ffffff;
   --component-border: #e0e0e0;
   --add-newchat-button: #444d68;
+    --dropdown-list: #e9e6e6;
 }
 
 * {

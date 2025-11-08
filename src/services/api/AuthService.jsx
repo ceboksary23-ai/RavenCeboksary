@@ -43,6 +43,7 @@ class AuthService {
       localStorage.setItem("token", result.token);
       localStorage.setItem("userid", result.userId);
       localStorage.setItem("usersettings", JSON.stringify(result.settings));
+      localStorage.setItem("refreshtoken", result.refreshToken);
 
       return result;
     } catch (error) {
@@ -51,12 +52,11 @@ class AuthService {
   }
 
   async Logout() {
-    const userId = localStorage.getItem("userid");
+    const refreshToken = localStorage.getItem("refreshtoken");
     const token = localStorage.getItem("token");
 
     const userData = {
-      userId,
-      token
+      refreshToken
     };
 
     const response = await fetch(
