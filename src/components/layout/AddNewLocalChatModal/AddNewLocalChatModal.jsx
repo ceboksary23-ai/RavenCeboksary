@@ -2,10 +2,11 @@ import { useState } from "react";
 import styles from "../../../styles/components/layout/AddNewLocalChatModal/AddNewLocalChatModal.module.css";
 import { motion } from "framer-motion";
 
-const CreateLocalChatModal = ({ onClick }) => {
+const CreateLocalChatModal = ({ onClick, onSelectUser }) => {
   const [userName, setUserName] = useState("");
   const [users, setUsers] = useState([]);
   const [pageNum, setPageNum] = useState(1);
+  const [selectedUser, setSelectedUser] = useState(null); // ← Добавлено
 
   const handleChangeUserName = (e) => {
     setUserName(e.target.value);
@@ -28,14 +29,32 @@ const CreateLocalChatModal = ({ onClick }) => {
         const filteredNewUsers = newUsers.filter(
           (user) => !existingIds.has(user.id)
         );
-        const updatedUsers = [...prevUsers, ...filteredNewUsers];
-        return updatedUsers;
+        return [...prevUsers, ...filteredNewUsers];
       });
-      setUserName(""); // Очищаем поле ввода после добавления
+      setUserName("");
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
+
+  // ← Новый: выбор пользователя
+  const toggleUser = (user) => {
+    setSelectedUser((prev) => (prev?.id === user.id ? null : user));
+  };
+
+  const handleGoToChat = () => {
+    if (selectedUser) {
+      const chatData = {
+        id: `${selectedUser.id}`,
+        name: `${selectedUser.firstName} ${selectedUser.lastName || ""}`.trim(),
+        avatar: selectedUser.avatarUrl,
+        isOnline: selectedUser.isOnline,
+      };
+      onSelectUser(chatData);
+      onClick();
+    }
+  };
+
   return (
     <div className={styles["create-localchat-blur"]}>
       <motion.div
@@ -63,6 +82,7 @@ const CreateLocalChatModal = ({ onClick }) => {
               </svg>
             </div>
           </div>
+
           <div className={styles["create-localchat-main"]}>
             <div className={styles["create-localchat-main-inputfield"]}>
               <svg
@@ -73,8 +93,8 @@ const CreateLocalChatModal = ({ onClick }) => {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M5.50019 10C5.50019 9.40905 5.61658 8.82389 5.84273 8.27792C6.06887 7.73196 6.40034 7.23588 6.8182 6.81802C7.23607 6.40016 7.73214 6.06869 8.27811 5.84254C8.82408 5.6164 9.40924 5.5 10.0002 5.5C10.5911 5.5 11.1763 5.6164 11.7223 5.84254C12.2682 6.06869 12.7643 6.40016 13.1822 6.81802C13.6 7.23588 13.9315 7.73196 14.1576 8.27792C14.3838 8.82389 14.5002 9.40905 14.5002 10C14.5002 11.1935 14.0261 12.3381 13.1822 13.182C12.3383 14.0259 11.1937 14.5 10.0002 14.5C8.80671 14.5 7.66212 14.0259 6.8182 13.182C5.97429 12.3381 5.50019 11.1935 5.50019 10ZM10.0002 2.5C8.83068 2.50012 7.67742 2.77374 6.63251 3.299C5.58759 3.82426 4.68 4.5866 3.98222 5.52512C3.28443 6.46365 2.8158 7.55235 2.61375 8.70427C2.4117 9.85619 2.48184 11.0394 2.81856 12.1594C3.15528 13.2794 3.74925 14.3051 4.55302 15.1546C5.35679 16.0041 6.3481 16.6539 7.44774 17.052C8.54739 17.4502 9.72491 17.5856 10.8862 17.4476C12.0476 17.3095 13.1605 16.9018 14.1362 16.257L18.9392 21.061C19.2206 21.3424 19.6022 21.5005 20.0002 21.5005C20.3981 21.5005 20.7798 21.3424 21.0612 21.061C21.3426 20.7796 21.5007 20.398 21.5007 20C21.5007 19.602 21.3426 19.2204 21.0612 18.939L16.2572 14.136C17.0045 13.0056 17.4315 11.6939 17.493 10.3402C17.5545 8.98652 17.248 7.64148 16.6063 6.44801C15.9645 5.25454 15.0114 4.25724 13.8482 3.56209C12.685 2.86694 11.3553 2.49991 10.0002 2.5Z"
                   fill="#7B818A"
                 />
@@ -90,20 +110,36 @@ const CreateLocalChatModal = ({ onClick }) => {
                 onChange={handleChangeUserName}
               />
             </div>
+
+            {/* ← Список пользователей — кликабельный */}
             <div
               className={styles["create-localchat-main-addedusers-container"]}
             >
               {users.map((user) => (
                 <div
-                  className={styles["create-localchat-main-addedusers"]}
+                  className={`${styles["create-localchat-main-addedusers"]} ${
+                    selectedUser?.id === user.id ? styles.selected : ""
+                  }`}
                   key={user.id}
+                  onClick={() => toggleUser(user)} // ← Выбор по клику
                 >
                   <img alt="" src={user.avatarUrl} />
                   <p>{user.firstName}</p>
+                  {selectedUser?.id === user.id && (
+                    <span style={{ marginLeft: "8px", color: "#4CAF50" }}>
+                      ✓
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
-            <button className={styles["create-localchat-main-createbtn"]}>
+
+            {/* ← Кнопка вызывает handleGoToChat */}
+            <button
+              className={styles["create-localchat-main-createbtn"]}
+              onClick={handleGoToChat}
+              disabled={!selectedUser}
+            >
               Перейти в чат
             </button>
           </div>

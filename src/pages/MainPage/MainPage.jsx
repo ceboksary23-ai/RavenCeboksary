@@ -41,8 +41,7 @@ const MainPage = () => {
     try {
       const { authService } = await import("../../services/api/AuthService");
       authService.Logout();
-    }
-    catch{}
+    } catch {}
   };
 
   const handleAddNewChat = (prev) => {
@@ -90,6 +89,11 @@ const MainPage = () => {
     } catch (error) {}
   };
 
+  const handleSelectLocalUser = (chatData) => {
+    setSelectedChat(chatData); // Открываем чат справа
+    setLocalChatIsOpen(false);
+  };
+
   useEffect(() => {
     if (filteredChats.length === 0 && search.trim() !== "") {
       loadUsers(search);
@@ -112,7 +116,7 @@ const MainPage = () => {
   };
 
   const openCreateLocalChatModal = (prev) => {
-    setLocalChatIsOpen(prev => !prev);
+    setLocalChatIsOpen((prev) => !prev);
   };
 
   const chats2 = [
@@ -146,7 +150,12 @@ const MainPage = () => {
         {isSettingsOpen && (
           <SettingsWindow onClick={handleCloseSettingsWindow} />
         )}
-        {localChatIsOpen && <CreateLocalChatModal onClick={openCreateLocalChatModal}/>}
+        {localChatIsOpen && (
+          <CreateLocalChatModal
+            onClick={openCreateLocalChatModal}
+            onSelectUser={handleSelectLocalUser}
+          />
+        )}
       </AnimatePresence>
       <div className={styles["chatsList-container"]}>
         <div className={styles["logo-menu"]}>
@@ -171,7 +180,9 @@ const MainPage = () => {
               {chats.length === 0 && !loading ? (
                 <div className={styles["no-chats-placeholder"]}>
                   <p>У вас нет чатов. Создайте новый!</p>
-                  <button onClick={openCreateLocalChatModal}>Создать новый чат</button>
+                  <button onClick={openCreateLocalChatModal}>
+                    Создать новый чат
+                  </button>
                 </div>
               ) : (
                 chats
@@ -208,16 +219,58 @@ const MainPage = () => {
             </div>
           )}
           <div className={styles["add-newchat"]} onClick={handleAddButtonClick}>
-            <button className={styles["add-newchat-btn"]}>+</button>{" "}
+            <button className={styles["add-newchat-btn"]}>
+              <svg
+                width="43"
+                height="43"
+                viewBox="0 0 43 43"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M41.9083 8.84844C43 11.4834 43 14.8207 43 21.5C43 28.1793 43 31.519 41.9083 34.1516C40.4535 37.6634 37.6634 40.4535 34.1516 41.9083C31.519 43 28.1793 43 21.5 43H14.3333C7.57756 43 4.19728 43 2.09983 40.9002C-1.42389e-07 38.8027 0 35.4224 0 28.6667V21.5C0 14.8207 7.11944e-08 11.4834 1.09172 8.84844C2.54646 5.33661 5.33661 2.54646 8.84844 1.09172C11.4834 7.11944e-08 14.8207 0 21.5 0C28.1793 0 31.519 7.11944e-08 34.1516 1.09172C37.6634 2.54646 40.4535 5.33661 41.9083 8.84844ZM11.9444 16.7222C11.9444 16.0886 12.1961 15.481 12.6441 15.033C13.0921 14.585 13.6998 14.3333 14.3333 14.3333H28.6667C29.3002 14.3333 29.9079 14.585 30.3559 15.033C30.8039 15.481 31.0556 16.0886 31.0556 16.7222C31.0556 17.3558 30.8039 17.9634 30.3559 18.4114C29.9079 18.8594 29.3002 19.1111 28.6667 19.1111H14.3333C13.6998 19.1111 13.0921 18.8594 12.6441 18.4114C12.1961 17.9634 11.9444 17.3558 11.9444 16.7222ZM11.9444 26.2778C11.9444 25.6442 12.1961 25.0366 12.6441 24.5886C13.0921 24.1406 13.6998 23.8889 14.3333 23.8889H21.5C22.1336 23.8889 22.7412 24.1406 23.1892 24.5886C23.6372 25.0366 23.8889 25.6442 23.8889 26.2778C23.8889 26.9114 23.6372 27.519 23.1892 27.967C22.7412 28.415 22.1336 28.6667 21.5 28.6667H14.3333C13.6998 28.6667 13.0921 28.415 12.6441 27.967C12.1961 27.519 11.9444 26.9114 11.9444 26.2778Z"
+                  fill="#A0B8FF"
+                />
+              </svg>
+            </button>{" "}
           </div>
         </div>
       </div>
-      <div className={styles["chat-container"]}>
-        <div className={styles["aboutchat-container"]}>
-          {selectedChat &&(
-            <AboutChat avatar={selectedChat.img} name={selectedChat.name} isOnline={true} />
-          )}
-        </div>
+      <div
+        className={`${styles["chat-container"]} ${
+          !selectedChat ? styles.mobileHidden : ""
+        }`}
+      >
+        {selectedChat ? (
+          <div className={styles["chat-layout"]}>
+            {/* Заголовок чата */}
+            <div className={styles["aboutchat"]}>
+              <AboutChat
+                avatar={selectedChat.avatar || selectedChat.img}
+                name={selectedChat.name}
+                isOnline={selectedChat.isOnline}
+              />
+            </div>
+
+            {/* Сообщения */}
+            <div className={styles["chat-main"]}>
+              <div className={styles["messages-empty"]}>
+                <p>Начните общение!</p>
+              </div>
+            </div>
+
+            {/* Поле ввода */}
+            <div className={styles["chat-input"]}>
+              <input type="text" placeholder="Напишите сообщение..." />
+              <button>Отправить</button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles["no-chat-selected"]}>
+          </div>
+        )}
       </div>
     </div>
   );
