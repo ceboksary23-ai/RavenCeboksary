@@ -72,7 +72,6 @@ class AuthService {
         body: JSON.stringify(userData),
       }
     );
-    const result = await response.json();
 
     if (!response.ok) throw new Error(response.status);
 

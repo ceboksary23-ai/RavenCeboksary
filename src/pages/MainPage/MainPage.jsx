@@ -1,6 +1,7 @@
 import styles from "./MainPage.module.css";
 import BurgerMenuBtn from "../../components/common/Buttons/BurgerMenu/BurgerMenu";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useSignalR } from "../../hooks/useSignalR";
 import SearchField from "../../components/common/SearchField/SearchField";
 import ChatUi from "../../components/ui/Chat/ChatUi";
 import CreateNewChatModal from "../../components/layout/CreateNewChatModal/CreateNewChatModal";
@@ -26,6 +27,65 @@ const MainPage = () => {
   const [pageNum, setPageNumb] = useState(1); // состояние для страниц на пагинацию
   const [filteredChats, setFilteredChats] = useState([]); // массив отфильтрованных чатов
   const [localChatIsOpen, setLocalChatIsOpen] = useState(false);
+
+  const [inputMessage, setInputMessage] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const { isConnected, messages, typingUsers, startTyping, stopTyping } =
+    useSignalR(selectedChat?.id);
+
+  const currentUserId = localStorage.getItem("userid");
+
+  // Прокрутка к последнему сообщению
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Обработчик изменения input
+  const handleInputChange = (e) => {
+    setInputMessage(e.target.value);
+
+    // Запускаем индикатор печати
+    if (e.target.value.trim()) {
+      startTyping();
+    } else {
+      stopTyping();
+    }
+  };
+
+  // Обработчик отправки сообщения
+  const handleSendMessage = async () => {
+    const messageService = (await import("../../services/api/MessagesService")).default;
+    if (!inputMessage.trim() || !selectedChat) return;
+
+    try {
+        // Используем сервис
+        const result = await messageService.sendMessage(
+            inputMessage,
+            selectedChat.id, // targetUserId
+            selectedChat.id, // chatId
+            null // file (можно добавить позже)
+        );
+        
+        setInputMessage('');
+        stopTyping();
+        console.log('✅ Сообщение отправлено:', result);
+    } catch (error) {
+        console.error('❌ Ошибка отправки:', error);
+    }
+  };
+
+  // Обработчик нажатия Enter
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
 
   const handleOpenSettingsWindow = () => {
     setIsSettingsOpen(true);
@@ -256,20 +316,86 @@ const MainPage = () => {
 
             {/* Сообщения */}
             <div className={styles["chat-main"]}>
-              <div className={styles["messages-empty"]}>
-                <p>Начните общение!</p>
-              </div>
+              {messages.length === 0 ? (
+                <div className={styles["messages-empty"]}>
+                  <p>Начните общение!</p>
+                </div>
+              ) : (
+                <div className={styles["messages-container"]}>
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={`${styles["message"]} ${
+                        message.senderId === currentUserId
+                          ? styles["own-message"]
+                          : styles["other-message"]
+                      }`}
+                    >
+                      <div className={styles["message-header"]}>
+                        <strong>{message.senderName}</strong>
+                        <span className={styles["message-time"]}>
+                          {new Date(message.createdAt).toLocaleTimeString()}
+                        </span>
+                        {message.isEdited && (
+                          <span className={styles["edited-badge"]}>(ред.)</span>
+                        )}
+                      </div>
+
+                      <div className={styles["message-content"]}>
+                        {message.isDeleted ? (
+                          <em>Сообщение удалено</em>
+                        ) : (
+                          message.content
+                        )}
+                      </div>
+
+                      {message.readCount > 0 && (
+                        <div className={styles["message-read-info"]}>
+                          Прочитано: {message.readCount}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {/* Индикатор печати */}
+                  {typingUsers.size > 0 && (
+                    <div className={styles["typing-indicator"]}>
+                      <div className={styles["typing-dots"]}>
+                        <span className={styles["typing-text"]}>
+                          Печатает...
+                        </span>
+                        <span className={styles["dot"]}></span>
+                        <span className={styles["dot"]}></span>
+                        <span className={styles["dot"]}></span>
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={messagesEndRef} />
+                </div>
+              )}
             </div>
 
             {/* Поле ввода */}
             <div className={styles["chat-input"]}>
-              <input type="text" placeholder="Напишите сообщение..." />
-              <button>Отправить</button>
+              <input
+                type="text"
+                placeholder="Напишите сообщение..."
+                value={inputMessage}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
+                onBlur={stopTyping}
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={!inputMessage.trim()}
+              >
+                Отправить
+              </button>
             </div>
           </div>
         ) : (
-          <div className={styles["no-chat-selected"]}>
-          </div>
+          <div className={styles["no-chat-selected"]}></div>
         )}
       </div>
     </div>
