@@ -12,6 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import AddFriendModal from "../../components/layout/AddFrinedModal/AddFriendModal";
 import SettingsWindow from "../../components/layout/SettingsWindow/SettingsWindow";
 import CreateLocalChatModal from "../../components/layout/AddNewLocalChatModal/AddNewLocalChatModal";
+import Message from "../../components/ui/Chat/MessageForm";
 
 const MainPage = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false); // состояние открытия настроек
@@ -59,23 +60,24 @@ const MainPage = () => {
 
   // Обработчик отправки сообщения
   const handleSendMessage = async () => {
-    const messageService = (await import("../../services/api/MessagesService")).default;
+    const { messageService } = await import(
+      "../../services/api/MessagesService"
+    );
     if (!inputMessage.trim() || !selectedChat) return;
 
     try {
-        // Используем сервис
-        const result = await messageService.sendMessage(
-            inputMessage,
-            selectedChat.id, // targetUserId
-            selectedChat.id, // chatId
-            null // file (можно добавить позже)
-        );
-        
-        setInputMessage('');
-        stopTyping();
-        console.log('✅ Сообщение отправлено:', result);
+      // Используем сервис
+      const result = await messageService.sendMessage(
+        inputMessage,
+        selectedChat.interlocutorId,
+        selectedChat.chatId // targetUserId // chatId
+      );
+
+      setInputMessage("");
+      stopTyping();
+      console.log("✅ Сообщение отправлено:", result);
     } catch (error) {
-        console.error('❌ Ошибка отправки:', error);
+      console.error("❌ Ошибка отправки:", error);
     }
   };
 
@@ -95,21 +97,21 @@ const MainPage = () => {
     setIsSettingsOpen(false);
   };
 
-  const handleChatClick = async (chat) => {
-    // setSelectedChat(chat);
-
-    try {
-      const { authService } = await import("../../services/api/AuthService");
-      authService.Logout();
-    } catch {}
+  const handleChatClick = (chat) => {
+    setSelectedChat(chat);
   };
 
   const handleAddNewChat = (prev) => {
     setAddNewChat((prev) => !prev);
   };
 
-  const handleAddNewFrined = (prev) => {
-    setAddFrined((prev) => !prev);
+  const handleAddNewFrined = async (prev) => {
+    // setAddFrined((prev) => !prev);
+
+    try {
+      const { authService } = await import("../../services/api/AuthService");
+      authService.Logout();
+    } catch {}
   };
 
   const handleAddButtonClick = (prev) => {
@@ -150,8 +152,7 @@ const MainPage = () => {
   };
 
   const handleSelectLocalUser = (chatData) => {
-    setSelectedChat(chatData); // Открываем чат справа
-    setLocalChatIsOpen(false);
+    setSelectedChat(null); // Открываем чат справа
   };
 
   useEffect(() => {
@@ -179,6 +180,13 @@ const MainPage = () => {
     setLocalChatIsOpen((prev) => !prev);
   };
 
+  const handleCloseChat = (e) => {
+    if (e.key === "Esc" && !e.shiftKey) {
+      e.preventDefault();
+      setSelectedChat(null);
+    }
+  };
+
   const chats2 = [
     {
       id: 1,
@@ -203,7 +211,7 @@ const MainPage = () => {
     },
   ];
   return (
-    <div className={styles["mainPage-container"]}>
+    <div className={styles["mainPage-container"]} onKeyPress={handleCloseChat}>
       <AnimatePresence>
         {addNewChat && <CreateNewChatModal onClick={handleAddNewChat} />}
         {addFrined && <AddFriendModal onClick={handleAddNewFrined} />}
@@ -255,7 +263,7 @@ const MainPage = () => {
                       img={chat.img}
                       name={chat.name}
                       time={chat.time}
-                      msgText={chat.msgText}
+                      msgText={chat.lastMessage}
                       isSelected={selectedChat === chat.id}
                       onClick={() => handleChatClick(chat)}
                     />
@@ -275,6 +283,12 @@ const MainPage = () => {
                 onClick={handleAddNewFrined}
               >
                 Добавить друга
+              </button>
+              <button
+                className={styles["chatsAddButtons"]}
+                onClick={openCreateLocalChatModal}
+              >
+                Создать новый чат
               </button>
             </div>
           )}
@@ -316,64 +330,59 @@ const MainPage = () => {
 
             {/* Сообщения */}
             <div className={styles["chat-main"]}>
-              {messages.length === 0 ? (
-                <div className={styles["messages-empty"]}>
-                  <p>Начните общение!</p>
-                </div>
-              ) : (
-                <div className={styles["messages-container"]}>
-                  {messages.map((message) => (
-                    <div
+              <div className={styles["messages-container"]}>
+                {messages.map((message, index) => {
+                  const isOwn = message.senderId === currentUserId;
+                  const prevMessage = messages[index - 1];
+                  const nextMessage = messages[index + 1];
+
+                  // Определяем, нужно ли показывать отправителя
+                  const showSender =
+                    !isOwn &&
+                    (!prevMessage ||
+                      prevMessage.senderId !== message.senderId ||
+                      new Date(message.createdAt) -
+                        new Date(prevMessage.createdAt) >
+                        300000); // 5 минут
+
+                  // Определяем, первое ли это сообщение в группе
+                  const isFirstInGroup =
+                    !prevMessage ||
+                    prevMessage.senderId !== message.senderId ||
+                    new Date(message.createdAt) -
+                      new Date(prevMessage.createdAt) >
+                      300000;
+
+                  // Определяем, последнее ли это сообщение в группе
+                  const isLastInGroup =
+                    !nextMessage ||
+                    nextMessage.senderId !== message.senderId ||
+                    new Date(nextMessage.createdAt) -
+                      new Date(message.createdAt) >
+                      300000;
+
+                  // Проверяем, нужно ли показывать разделитель дат
+                  const showDateSeparator =
+                    !prevMessage ||
+                    new Date(message.createdAt).toDateString() !==
+                      new Date(prevMessage.createdAt).toDateString();
+
+                  return (
+                    <Message
                       key={message.id}
-                      className={`${styles["message"]} ${
-                        message.senderId === currentUserId
-                          ? styles["own-message"]
-                          : styles["other-message"]
-                      }`}
-                    >
-                      <div className={styles["message-header"]}>
-                        <strong>{message.senderName}</strong>
-                        <span className={styles["message-time"]}>
-                          {new Date(message.createdAt).toLocaleTimeString()}
-                        </span>
-                        {message.isEdited && (
-                          <span className={styles["edited-badge"]}>(ред.)</span>
-                        )}
-                      </div>
-
-                      <div className={styles["message-content"]}>
-                        {message.isDeleted ? (
-                          <em>Сообщение удалено</em>
-                        ) : (
-                          message.content
-                        )}
-                      </div>
-
-                      {message.readCount > 0 && (
-                        <div className={styles["message-read-info"]}>
-                          Прочитано: {message.readCount}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                  {/* Индикатор печати */}
-                  {typingUsers.size > 0 && (
-                    <div className={styles["typing-indicator"]}>
-                      <div className={styles["typing-dots"]}>
-                        <span className={styles["typing-text"]}>
-                          Печатает...
-                        </span>
-                        <span className={styles["dot"]}></span>
-                        <span className={styles["dot"]}></span>
-                        <span className={styles["dot"]}></span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div ref={messagesEndRef} />
-                </div>
-              )}
+                      message={{
+                        ...message,
+                        showDateSeparator,
+                      }}
+                      isOwn={isOwn}
+                      showSender={showSender}
+                      isFirstInGroup={isFirstInGroup}
+                      isLastInGroup={isLastInGroup}
+                    />
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
             </div>
 
             {/* Поле ввода */}
