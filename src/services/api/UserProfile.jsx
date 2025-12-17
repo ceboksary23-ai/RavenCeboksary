@@ -24,8 +24,9 @@ class UserProfile {
                 result = await response.json();
                 localStorage.setItem("userProfile", JSON.stringify(result));
                 const profile = JSON.parse(localStorage.getItem('userProfile'));
+                const avatarUrl = profile.avatarUrl;
                 const mediaResponse = await fetch(
-                    `${API_CONFIG.BASE_URL}/api/UserMedia/media`, // Эндпоинт для медиа пользователя
+                    `${API_CONFIG.BASE_URL}${API_CONFIG.AVATARS.GETCHATAVATAR}?fileUrl=${avatarUrl}`, // Эндпоинт для медиа пользователя
                     {
                         method: 'GET',
                         headers: {
@@ -39,8 +40,10 @@ class UserProfile {
                     console.warn('Не удалось получить медиа пользователя, используем дефолтные значения');
                     return userProfile;
                 }
+                console.log(mediaResponse.status);
 
                 const mediaData = await mediaResponse.json();
+                console.log(mediaData)
 
                 // 4. Обновляем avatarUrl в профиле
                 if (mediaData.avatarUrl) {
