@@ -25,7 +25,7 @@ function App() {
   useEffect(() => {
     const userId = localStorage.getItem('userid');
     setIsAuth(!!userId); // true если нет userId, false если есть
-  }, []); // ← Пустой массив = выполнить один раз
+  }, []); 
   //gkufgtuifj
   return (
     <BrowserRouter>

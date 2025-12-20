@@ -61,6 +61,7 @@ class SignalRService {
     };
 
     setupEventHandlers = () => {
+
         // События чата
         this.connection.on('ReceiveMessage', (message) => {
             console.log('📨 Новое сообщение:', message);

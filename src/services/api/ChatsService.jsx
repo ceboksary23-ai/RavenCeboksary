@@ -1,3 +1,4 @@
+import { recordStats } from "framer-motion";
 import { API_CONFIG } from "../config/config";
 
 class ChatsService {
@@ -76,9 +77,25 @@ class ChatsService {
     }
   }
 
-  async CreateGroupChat() {
+  async CreateGroupChat(requestData) {
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.CHATS.CREATEGROUPCHAT}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(requestData)
+      });
 
-  }
+      if (!response.ok) throw new Error(response.status);
+
+      return await response.json();
+    }
+    catch (error) { };
+  };
 
   async CreatePersonalChat(targetUserId) {
     const token = localStorage.getItem("token");

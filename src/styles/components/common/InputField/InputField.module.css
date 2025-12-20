@@ -25,7 +25,7 @@
     width: 100%;
     padding: 1.2vh 1vw;
     border-radius: 10px;
-    font-size: 0.8vw;
+    font-size: 1em;
     outline: none;
     background-color: var(--input-field) !important;
     color: var(--text-heading);

@@ -103,7 +103,6 @@ class UserProfile {
 
     async RevokeAllDevices() {
         try {
-            const deviceId = localStorage.getItem('deviceid');
             const token = localStorage.getItem('token');
             const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.PROFILE.REVOKEALLDEVICES}`, {
                 method: 'DELETE',
@@ -111,18 +110,36 @@ class UserProfile {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(deviceId)
             });
 
             if (!response.ok) throw new Error(response.status);
-            console.log("Оно чё заработало с первого раза?");
 
             return "Вы вышли со всех устройств!";
         }
         catch {
 
+        };
+    };
+
+    async RevokeCurrentDevice(deviceId) {
+        try {
+            const token = localStorage.getItem('token');
+            const currentDeviceId = localStorage.getItem('deviceid');
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.PROFILE.REVOKEDEVICE}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ deviceId: deviceId })
+            });
+
+            if (!response.ok) throw new Error(response.status);
+
+            return await response.json();
         }
-    }
+        catch(error) {}
+    };
 };
 
 export const userProfile = new UserProfile();
